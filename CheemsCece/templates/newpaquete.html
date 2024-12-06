@@ -1,0 +1,83 @@
+{% include 'headerC.html' %}
+<section class="section">
+    <div class="bg-overlay bg-primary back-presentation"></div>
+    <div class="container"> 
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Registrar Nuevo Paquete</h5>
+                        <form id="paqueteForm" onsubmit="return guardarPaquete(event)">
+                            <div class="mb-3">
+                                <label for="id_cliente" class="form-label">ID Cliente</label>
+                                <input type="number" class="form-control" id="id_cliente" name="id_cliente" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="codigo_paquete" class="form-label">Código del Paquete</label>
+                                <input type="text" class="form-control" id="codigo_paquete" name="codigo_paquete" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fecha_envio" class="form-label">Fecha de Envío</label>
+                                <input type="date" class="form-control" id="fecha_envio" name="fecha_envio" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fecha_llegada" class="form-label">Fecha de Llegada</label>
+                                <input type="date" class="form-control" id="fecha_llegada" name="fecha_llegada">
+                            </div>
+                            <div class="mb-3">
+                                <label for="tamano" class="form-label">Tamaño</label>
+                                <select class="form-control" id="tamano" name="tamano" required>
+                                    <option value="Pequeño">Pequeño</option>
+                                    <option value="Mediano">Mediano</option>
+                                    <option value="Grande">Grande</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select class="form-control" id="estado" name="estado" required>
+                                    <option value="En tránsito">En tránsito</option>
+                                    <option value="Entregado">Entregado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    // Generar código de paquete automáticamente al cargar el formulario
+    document.addEventListener('DOMContentLoaded', () => {
+        const codigoInput = document.getElementById('codigo_paquete');
+        const randomCode = `PKG-${Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000}`;
+        codigoInput.value = randomCode;
+    });
+
+    function guardarPaquete(event) {
+        event.preventDefault();
+        const formData = new FormData(document.getElementById('paqueteForm'));
+        fetch('/paquete', {
+            method: 'POST',
+            body: JSON.stringify(Object.fromEntries(formData)),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.id) {
+                    alert(`Paquete registrado correctamente. Código: ${data.codigo_paquete}`);
+                    window.location.href = '/paquetes'; // Redirigir a la lista de paquetes
+                } else {
+                    alert('Error: ' + data.error || 'No se pudo registrar el paquete');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+{% include 'footer.html' %}

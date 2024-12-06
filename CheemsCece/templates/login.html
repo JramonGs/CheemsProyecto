@@ -1,0 +1,75 @@
+{% include 'header2.html' %}
+
+<section class="section">
+    <div class="bg-overlay bg-primary back-presentation"></div>
+    <div class="container">
+        <div class="row justify-content-center"> 
+            <div class="col-lg-4 col-md-6 col-sm-8">
+                <div class="card mt-5 p-4 login-container shadow-lg rounded-lg">
+                    <div class="card-body">
+                        <h1 class="mb-0 text-center title-page text-center">Inicio de Sesión</h1>
+                        
+                        {% if error %}
+                            <div class="alert alert-danger mb-3">{{ error }}</div>
+                        {% endif %}
+                        
+                        <form id="login-form">
+                            <div class="mb-3">
+                                <input type="text" name="nombre" class="form-control border-0 shadow-sm" id="form-nombre" placeholder="Ingresa tu nombre de usuario" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="password" name="password" class="form-control border-0 shadow-sm" id="form-contrasenia" placeholder="Ingresa tu contraseña" required>
+                            </div>
+                            <div class="d-grid mt-3">
+                                <button type="button" class="btn btn-primary shadow-sm" id="login-button">Confirmar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% include 'footer.html' %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('login-button').addEventListener('click', login);
+
+        function login() {
+            const nombreElement = document.getElementById('form-nombre');
+            const contraseniaElement = document.getElementById('form-contrasenia');
+
+            if (!nombreElement || !contraseniaElement) {
+                console.error("Formulario no encontrado.");
+                return;
+            }
+
+            const nombre = nombreElement.value;
+            const contrasenia = contraseniaElement.value;
+
+            if (!nombre || !contrasenia) {
+                alert('Todos los campos son obligatorios.');
+                return;
+            }
+
+            const data = { nombre, contrasenia };
+            fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/central';
+                } else if (response.status === 401) {
+                    alert('Nombre de usuario o contraseña incorrectos.');
+                } else {
+                    alert(`Ocurrió un error al iniciar sesión: ${response.status}`);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    });
+</script>

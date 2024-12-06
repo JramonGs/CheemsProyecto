@@ -1,0 +1,55 @@
+{% include 'header3.html' %}
+<section class="section hero-section">
+    <div class="bg-overlay bg-primary back-presentation"></div>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-5">
+                <div> 
+                    <h1 class="fw-semibold mb-3 hero-title">Rastrea tu envío</h1>
+                    <p class="font-size-14">Ingresa el número de rastreo para obtener la información del estado actual de tu paquete</p>
+                    <input type="text" class="form-control" id="searchList" autocomplete="off" placeholder="Ingresa código guía">
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <a href="javascript: void(0);" class="btn btn-warning" onclick="verificarCodigo();">Rastrear</a>
+                        <a href="javascript: void(0);" class="btn btn-light">Costos de envío</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-8 col-sm-10 ms-lg-auto">
+                <div class="card overflow-hidden mb-0 mt-5 mt-lg-0 cheems-presentation">
+                    <img src="{{url_for('static', filename='images/cheems_box.png')}}" />
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+  function verificarCodigo() {
+    var codigo = document.getElementById('searchList').value.trim();
+
+    // Hacer una petición AJAX al servidor para verificar el código de rastreo
+    fetch('/verificar_codigo', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ codigo_paquete: codigo })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.existe) {
+            // Si el código es válido, redirigir a la ruta de Flask /page
+            window.location.href = '/page';  // Redirige a la ruta que definiste en app.py
+        } else {
+            // Si no es válido, mostrar un mensaje de error
+            alert('¡Error! El código de rastreo no es válido.');
+        }
+    })
+    .catch(error => {
+        console.error('Error al verificar el código:', error);
+        alert('Hubo un error al verificar el código de rastreo.');
+    });
+}
+
+</script>
+{% include 'footer.html' %}
